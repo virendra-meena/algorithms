@@ -1,46 +1,46 @@
-def merge_two_sorted_lists(B, C, T):
-	b=0
-	c=0
-	t=0
-	
-	while b<len(B) and c<len(C):
-		if B[b]<=C[c]:
-			T[t] = B[b]
-			b+=1
-			t+=1
-		else:
-			T[t] = C[c]
-			c+=1
-			t+=1
+def merge(A: list, B: list) -> list:
+    i, j, k = 0, 0, 0
+    C = [0] * (len(A) + len(B))
 
-	if b<len(B):
-		T[t:] = B[b:]
-	
-	if c<len(C):
-		T[t:] = C[c:]
-	
-	return T	 
+    while i < len(A) and j < len(B):
+        if A[i] <= B[j]:
+            C[k] = A[i]
+            i += 1
+            k += 1
+        else:
+            C[k] = B[j]
+            k += 1
+            j += 1
 
-def merge_sort(A):
-	if len(A) <= 1:
-		return A
-	
-	if len(A) == 2:
-		if A[0]>A[1]:
-			A[0], A[1] = A[1], A[0]
-		return A
+    while i < len(A):
+        C[k] = A[i]
+        k += 1
+        i += 1
 
-	e = len(A)
-	mid = e // 2
-	
-	B = merge_sort(A[:mid])
-	C = merge_sort(A[mid:])
-	
-	A = merge_two_sorted_lists(B, C, A)
-	return A
+    while j < len(B):
+        C[k] = B[j]
+        k += 1
+        j += 1
 
-assert(merge_sort([]) == [])
-assert(merge_sort([1, 2, 3, 4, 5]) == [1, 2, 3, 4, 5])
-assert(merge_sort([10]) == [10])
-assert(merge_sort([12, 10]) == [10, 12])
-assert(merge_sort([8, 7, 6, 5, 4, 3, 2, 1]) == [1, 2, 3, 4, 5, 6, 7, 8])
+    return C
+
+
+def mergesort(arr: list) -> list:
+    if len(arr) < 2:
+        return arr
+
+    mid = len(arr) // 2
+    A = mergesort(arr[:mid])
+    B = mergesort(arr[mid:])
+
+    C = merge(A, B)
+    return C
+
+
+def test():
+    arr = [4, 5, 3, 7, 1]
+    print(mergesort(arr))
+
+
+if __name__ == "__main__":
+    test()
