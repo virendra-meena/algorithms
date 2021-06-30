@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from clustering.utils import add_lat_long
+from clustering.utils import add_lat_long, create_quantiles, min_max_scalar
 
 
 def preprocess(choc_df: pd.DataFrame) -> pd.DataFrame:
@@ -12,30 +12,17 @@ def preprocess(choc_df: pd.DataFrame) -> pd.DataFrame:
     choc_df['rating_norm'] = (choc_df['rating'] - choc_df['rating'].mean()
                               ) / choc_df['rating'].std()
 
-    choc_df['cocoa_percent_norm'] = (
-                                            choc_df['cocoa_percent'] -
-                                            choc_df['cocoa_percent'].mean()) / choc_df['cocoa_percent'].std()
+    choc_df['cocoa_percent_norm'] = (choc_df['cocoa_percent'] - choc_df['cocoa_percent'].mean()
+                                     ) / choc_df['cocoa_percent'].std()
 
     # generate lat long columns
     choc_df = add_lat_long(choc_df)
 
-    def createQuantiles(dfColumn, numQuantiles):
-        return pd.qcut(dfColumn, numQuantiles, labels=False, duplicates='drop')
-
-    numQuantiles = 20
-    colsQuantiles = ['maker_lat', 'maker_long', 'origin_lat', 'origin_long']
-
-    for string in colsQuantiles:
-        choc_df[string] = createQuantiles(choc_df[string], numQuantiles)
-
-    def minMaxScaler(numArr):
-        minx = np.min(numArr)
-        maxx = np.max(numArr)
-        numArr = (numArr - minx) / (maxx - minx)
-        return numArr
-
-    for string in colsQuantiles:
-        choc_df[string] = minMaxScaler(choc_df[string])
+    num_quantiles = 20
+    cols_quantiles = ['maker_lat', 'maker_long', 'origin_lat', 'origin_long']
+    for col in cols_quantiles:
+        choc_df[col] = create_quantiles(choc_df[col], num_quantiles)
+        choc_df[col] = min_max_scalar(choc_df[col])
 
     # duplicate the "maker" feature since it's removed by one-hot encoding function
     choc_df['maker2'] = choc_df['maker']
@@ -53,4 +40,5 @@ def preprocess(choc_df: pd.DataFrame) -> pd.DataFrame:
     # Note: In the latest version of "get_dummies", you can set "dtype" to float
     choc_df = choc_df / 1.0
 
+    print("choc df columns", choc_df.columns)
     return choc_df

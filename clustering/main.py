@@ -21,6 +21,7 @@ if __name__ == "__main__":
     # num of clusters
     k = 30  # @param
     feature_cols = choc_df.columns.values  # save original columns
+    print(feature_cols)
 
     # initialize every point to an impossible value, the k+1 cluster
     choc_df['centroid'] = k

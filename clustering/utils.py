@@ -49,3 +49,15 @@ def getSimilarity(obj1, obj2):
         similarity = np.sum((similarity ** 2.0) / 10.0)
         similarity = 1 - math.sqrt(similarity)
         return similarity
+
+
+def min_max_scalar(df: pd.Series) -> pd.Series:
+    np_max = np.max(df)
+    np_min = np.min(df)
+    df = (df - np_min) // (np_max - np_min)
+    return df
+
+
+def create_quantiles(df: pd.DataFrame, num_quantiles: int) -> pd.DataFrame:
+    df = pd.qcut(x=df, q=num_quantiles, labels=False, duplicates='drop')
+    return df
